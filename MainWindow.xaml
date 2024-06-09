@@ -5,8 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:convex_hull_visualizer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Convex Hull Graham" Height="450" Width="800">
     <Grid>
+         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
+        <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="LightGray" MouseLeftButtonDown="CanvasMouseLeftButtonDown" >
+            <Canvas Name="MyCanvas" 
+            RenderTransform="1 0 0 -1 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom">
+             </Canvas>
+        </Border>
+
+         <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10">
+            <TextBox Name="NumberTextBox" Margin="5" PreviewTextInput="NumberValidationTextBox"/>
+            <Button Content="Generate Points" Margin="5" Click="GeneratePoints"/>
+            <Button Content="Import CSV" Margin="5" Click="ImportCSV"/>
+            <Button Content="Run" Margin="5" Click="CalculateConvexHull"/>
+            <TextBlock Name="OutputText" Text="Output Text" Margin="5"/>
+        </StackPanel>
     </Grid>
 </Window>
