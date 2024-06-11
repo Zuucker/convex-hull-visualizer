@@ -22,6 +22,7 @@
             <TextBox Name="NumberTextBox" Margin="5" PreviewTextInput="NumberValidationTextBox"/>
             <Button Content="Generate Points" Margin="5" Click="GeneratePoints"/>
             <Button Content="Import CSV" Margin="5" Click="ImportCSV"/>
+            <Button Content="Clear Points" Margin="5" Click="ClearPoints"/>
             <Button Content="Run" Margin="5" Click="CalculateConvexHull"/>
             <TextBlock Name="OutputText" Text="Output Text" Margin="5"/>
         </StackPanel>
