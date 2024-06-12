@@ -23,8 +23,9 @@
             <Button Content="Generate Points" Margin="5" Click="GeneratePoints"/>
             <Button Content="Import CSV" Margin="5" Click="ImportCSV"/>
             <Button Content="Clear Points" Margin="5" Click="ClearPoints"/>
+            <Button Content="Export to CSV" Margin="5" Click="ExportCSV" Name="ExportButton"/>
             <Button Content="Run" Margin="5" Click="CalculateConvexHull"/>
-            <TextBlock Name="OutputText" Text="Output Text" Margin="5"/>
+            <TextBlock Name="OutputText" Text="Output Text" Margin="5" TextWrapping="Wrap"/>
         </StackPanel>
     </Grid>
 </Window>

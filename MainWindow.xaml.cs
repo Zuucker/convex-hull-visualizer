@@ -1,14 +1,14 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CsvHelper;
+using CsvHelper.Configuration;
+using Microsoft.Win32;
 
 namespace convex_hull_visualizer;
 
@@ -23,6 +23,8 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        ExportButton.IsEnabled = false;
     }
 
     public struct Point(double x, double y)
@@ -35,6 +37,12 @@ public partial class MainWindow : Window
         {
             return "(" + (int)X + " , " + (int)Y + ") " + (int)Angle + " \n";
         }
+    }
+
+    public struct CSVPoint
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
     }
 
     public void DrawPoints()
@@ -110,6 +118,7 @@ public partial class MainWindow : Window
         points = new Point[0];
         hullPoints = new List<Point>();
         MyCanvas.Children.Clear();
+        ExportButton.IsEnabled = false;
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -125,12 +134,101 @@ public partial class MainWindow : Window
 
     private void ImportCSV(object sender, RoutedEventArgs e)
     {
-        OutputText.Text = "Importing points";
+        OutputText.Text = "Importing points \n";
+
+        OpenFileDialog openFileDialog = new OpenFileDialog();
+
+        openFileDialog.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
+        openFileDialog.FilterIndex = 1;
+        openFileDialog.Multiselect = false;
+
+        bool? userClickedOK = openFileDialog.ShowDialog();
+
+        if (userClickedOK == true)
+        {
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = ",",
+                NewLine = ";",
+                HasHeaderRecord = false
+            };
+
+            string filePath = openFileDialog.FileName;
+
+            var reader = new StreamReader(filePath);
+            var csv = new CsvReader(reader, config);
+
+            try
+            {
+                ClearPoints(null, null);
+                while (csv.Read())
+                {
+                    CSVPoint newPoint = csv.GetRecord<CSVPoint>();
+
+                    Point[] newPoints = new Point[points.Length + 1];
+
+                    for (int i = 0; i < points.Length; i++)
+                    {
+                        newPoints[i] = points[i];
+                    }
+
+                    newPoints[points.Length] = new Point(newPoint.X, newPoint.Y);
+
+                    points = newPoints;
+                }
+
+                DrawPoints();
+                OutputText.Text = "Imported! \n";
+            }
+            catch (Exception Error)
+            {
+                OutputText.Text = "There is something wrong with the CSV file! \n";
+                return;
+            }
+        }
     }
 
     private void ExportCSV(object sender, RoutedEventArgs e)
     {
         OutputText.Text = "Exporting points";
+
+        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+        {
+            Delimiter = ",",
+            NewLine = ";\n",
+            HasHeaderRecord = false
+        };
+
+        var saveFileDialog = new SaveFileDialog();
+        saveFileDialog.Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*";
+        saveFileDialog.FilterIndex = 1;
+        saveFileDialog.RestoreDirectory = true;
+
+        if (saveFileDialog.ShowDialog() == true)
+        {
+            using var writer = new StreamWriter(saveFileDialog.FileName);
+            using var csv = new CsvWriter(writer, config);
+
+            CSVPoint[] exportData = new CSVPoint[hullPoints.Count];
+            int i = 0;
+
+            foreach (var point in hullPoints)
+            {
+                exportData[i] = new CSVPoint { X = point.X, Y = point.Y };
+                i++;
+            }
+
+            csv.WriteRecords(exportData);
+
+            MessageBox.Show(
+                "Data exported successfully.",
+                "Success",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information
+            );
+        }
+
+        OutputText.Text += "Exported points! \n";
     }
 
     public void PrintOutput() { }
@@ -205,6 +303,8 @@ public partial class MainWindow : Window
             OutputText.Text += "something!";
 
         DrawLines();
+
+        ExportButton.IsEnabled = true;
     }
 
     double CalcAngleBetweensPointsAndXAxis(Point a, Point b)
