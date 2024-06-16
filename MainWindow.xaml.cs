@@ -25,6 +25,8 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         ExportButton.IsEnabled = false;
+        GenerateButton.IsEnabled = false;
+        RunButton.IsEnabled = false;
     }
 
     public struct Point(double x, double y)
@@ -86,6 +88,8 @@ public partial class MainWindow : Window
 
         points = newPoints;
 
+        RunButton.IsEnabled = true;
+
         DrawPoints();
     }
 
@@ -119,17 +123,57 @@ public partial class MainWindow : Window
         hullPoints = new List<Point>();
         MyCanvas.Children.Clear();
         ExportButton.IsEnabled = false;
+        NumberTextBox.Text = "";
+        GenerateButton.IsEnabled = false;
+        RunButton.IsEnabled = false;
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
     {
         Regex regex = new Regex("[^0-9]+");
         e.Handled = regex.IsMatch(e.Text);
+
+        if (!e.Handled)
+        {
+            GenerateButton.IsEnabled = true;
+        }
+    }
+
+    private void CheckIfEmpty(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Back && NumberTextBox.Text.Length == 0)
+        {
+            GenerateButton.IsEnabled = false;
+        }
     }
 
     private void GeneratePoints(object sender, RoutedEventArgs e)
     {
         OutputText.Text = "Generating points";
+
+        int maxHight = (int)Border.ActualHeight - 10;
+        int maxWidth = (int)Border.ActualWidth - 10;
+
+        Random random = new Random();
+
+        for (int i = 0; i < int.Parse(NumberTextBox.Text); i++)
+        {
+            Point clickPosition = new Point(random.Next(maxWidth), random.Next(maxHight));
+
+            Point[] newPoints = new Point[points.Length + 1];
+
+            for (int j = 0; j < points.Length; j++)
+            {
+                newPoints[j] = points[j];
+            }
+
+            newPoints[points.Length] = clickPosition;
+
+            points = newPoints;
+        }
+
+        DrawPoints();
+        RunButton.IsEnabled = true;
     }
 
     private void ImportCSV(object sender, RoutedEventArgs e)
@@ -175,6 +219,11 @@ public partial class MainWindow : Window
                     newPoints[points.Length] = new Point(newPoint.X, newPoint.Y);
 
                     points = newPoints;
+                }
+
+                if (points.Length > 0)
+                {
+                    RunButton.IsEnabled = true;
                 }
 
                 DrawPoints();

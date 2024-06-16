@@ -12,19 +12,19 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="LightGray" MouseLeftButtonDown="CanvasMouseLeftButtonDown" >
+        <Border Name="Border" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="LightGray" MouseLeftButtonDown="CanvasMouseLeftButtonDown" >
             <Canvas Name="MyCanvas" 
             RenderTransform="1 0 0 -1 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom">
              </Canvas>
         </Border>
 
          <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10">
-            <TextBox Name="NumberTextBox" Margin="5" PreviewTextInput="NumberValidationTextBox"/>
-            <Button Content="Generate Points" Margin="5" Click="GeneratePoints"/>
+            <TextBox Name="NumberTextBox" Margin="5" PreviewTextInput="NumberValidationTextBox" KeyUp="CheckIfEmpty"/>
+            <Button Content="Generate Points" Margin="5" Click="GeneratePoints" Name="GenerateButton"/>
             <Button Content="Import CSV" Margin="5" Click="ImportCSV"/>
             <Button Content="Clear Points" Margin="5" Click="ClearPoints"/>
             <Button Content="Export to CSV" Margin="5" Click="ExportCSV" Name="ExportButton"/>
-            <Button Content="Run" Margin="5" Click="CalculateConvexHull"/>
+            <Button Content="Run" Margin="5" Click="CalculateConvexHull" Name="RunButton"/>
             <TextBlock Name="OutputText" Text="Output Text" Margin="5" TextWrapping="Wrap"/>
         </StackPanel>
     </Grid>
