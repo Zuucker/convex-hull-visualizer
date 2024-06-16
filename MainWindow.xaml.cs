@@ -118,7 +118,6 @@ public partial class MainWindow : Window
 
     private void ClearPoints(object sender, RoutedEventArgs e)
     {
-        OutputText.Text = "Clearing";
         points = new Point[0];
         hullPoints = new List<Point>();
         MyCanvas.Children.Clear();
@@ -126,6 +125,8 @@ public partial class MainWindow : Window
         NumberTextBox.Text = "";
         GenerateButton.IsEnabled = false;
         RunButton.IsEnabled = false;
+
+        OutputText.Text = "Cleared";
     }
 
     private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
@@ -277,16 +278,14 @@ public partial class MainWindow : Window
             );
         }
 
-        OutputText.Text += "Exported points! \n";
+        OutputText.Text = "Points exported! \n";
     }
-
-    public void PrintOutput() { }
 
     private void CalculateConvexHull(object sender, RoutedEventArgs e)
     {
         if (AreTwoPointsDiffrent())
         {
-            OutputText.Text = "Not enough original points! \n";
+            OutputText.Text = "Calculated a point \n";
             return;
         }
 
@@ -323,8 +322,6 @@ public partial class MainWindow : Window
                     angleSortedPoints[i]
                 );
 
-                OutputText.Text = isCCW + "  \n";
-
                 if (isCCW == 1)
                 {
                     hullPoints.Add(angleSortedPoints[i]);
@@ -342,14 +339,31 @@ public partial class MainWindow : Window
         hullPoints.Add(lowestPoint);
 
         OutputText.Text += "Calculated ";
+
+        bool shoudlDisplayPoints = hullPoints.Count <= 5;
+
         if (hullPoints.Count == 3)
             OutputText.Text += "a line!";
         else if (hullPoints.Count == 4)
             OutputText.Text += "a triangle!";
         else if (hullPoints.Count == 5)
-            OutputText.Text += "a square!";
+            OutputText.Text += "a quadrilateral!";
         else
-            OutputText.Text += "something!";
+            OutputText.Text += "complex convex figure!";
+
+        if (shoudlDisplayPoints)
+        {
+            OutputText.Text += "\n\nIn order: \n";
+            for (int i = 0; i < hullPoints.Count - 1; i++)
+            {
+                OutputText.Text +=
+                    "("
+                    + hullPoints[i].X.ToString("0.00")
+                    + ", "
+                    + hullPoints[i].Y.ToString("0.00")
+                    + ") \n";
+            }
+        }
 
         DrawLines();
 
@@ -402,7 +416,6 @@ public partial class MainWindow : Window
             {
                 if (points[i].X != points[j].X || points[i].Y != points[j].Y)
                 {
-                    OutputText.Text += "found one \n";
                     return false;
                 }
             }
