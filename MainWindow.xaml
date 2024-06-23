@@ -5,14 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:convex_hull_visualizer"
         mc:Ignorable="d"
-        Title="Convex Hull Graham" Height="450" Width="800">
+        Title="Convex Hull Graham" Height="450" Width="800"
+        SizeChanged="Resized">
     <Grid>
          <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Border Name="Border" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="LightGray" MouseLeftButtonDown="CanvasMouseLeftButtonDown" >
+        <Border Name="Border" Grid.Column="0" BorderBrush="Black" BorderThickness="1" Background="White" MouseLeftButtonDown="CanvasMouseLeftButtonDown" >
             <Canvas Name="MyCanvas" 
             RenderTransform="1 0 0 -1 0 0" HorizontalAlignment="Left" VerticalAlignment="Bottom">
              </Canvas>

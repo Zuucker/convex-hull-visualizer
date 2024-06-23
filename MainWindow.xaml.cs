@@ -29,16 +29,32 @@ public partial class MainWindow : Window
         RunButton.IsEnabled = false;
     }
 
-    public struct Point(double x, double y)
+    public struct Point
     {
-        public double X { get; set; } = x;
-        public double Y { get; set; } = y;
+        public Point(double x, double y)
+        {
+            X = x;
+            Y = y;
+
+            Random random = new Random();
+
+            Color = Color.FromRgb(
+                (byte)random.Next(0, 200),
+                (byte)random.Next(0, 200),
+                (byte)random.Next(0, 200)
+            );
+        }
+
+        public double X { get; set; }
+        public double Y { get; set; }
         public double Angle { get; set; }
 
         public string Print()
         {
             return "(" + (int)X + " , " + (int)Y + ") " + (int)Angle + " \n";
         }
+
+        public Color Color { get; set; }
     }
 
     public struct CSVPoint
@@ -51,22 +67,146 @@ public partial class MainWindow : Window
     {
         MyCanvas.Children.Clear();
 
-        Color[] colors = [Colors.Red, Colors.Blue, Colors.Green, Colors.Yellow, Colors.Orange];
+        DrawScale();
+
         foreach (var point in points)
         {
-            int index = (int)point.Y % colors.Length;
-
             Ellipse ellipse = new Ellipse
             {
                 Width = 10,
                 Height = 10,
-                Fill = new SolidColorBrush(colors[index])
+                Fill = new SolidColorBrush(point.Color),
             };
 
             Canvas.SetLeft(ellipse, point.X - 5);
             Canvas.SetTop(ellipse, point.Y - 5);
-
             MyCanvas.Children.Add(ellipse);
+        }
+    }
+
+    private void DrawScale()
+    {
+        int scaleWidth = (int)Border.ActualWidth;
+        int scaleHeight = (int)Border.ActualHeight;
+        int majorTickInterval = 100;
+        int minorTickInterval = 20;
+
+        int Y = 2;
+        int X = 2;
+
+        Line mainLine = new Line
+        {
+            X1 = 0,
+            Y1 = Y,
+            X2 = scaleWidth,
+            Y2 = Y,
+            Stroke = Brushes.Gray,
+            StrokeThickness = 2
+        };
+
+        MyCanvas.Children.Add(mainLine);
+
+        for (int i = 0; i <= scaleWidth; i += majorTickInterval)
+        {
+            Line tick = new Line
+            {
+                X1 = i,
+                Y1 = Y - 8,
+                X2 = i,
+                Y2 = Y + 8,
+                Stroke = Brushes.Gray,
+                StrokeThickness = 2
+            };
+            MyCanvas.Children.Add(tick);
+
+            TextBlock label = new TextBlock { Text = i == 0 ? "0" : i.ToString(), FontSize = 12 };
+            label.RenderTransform = new ScaleTransform(1, -1);
+            Canvas.SetLeft(label, i == 0 ? 16 : (i - 10));
+            Canvas.SetTop(label, Y + 25);
+            MyCanvas.Children.Add(label);
+        }
+
+        for (int i = 0; i <= scaleWidth; i += minorTickInterval)
+        {
+            if (i % majorTickInterval != 0)
+            {
+                Line tick = new Line
+                {
+                    X1 = i,
+                    Y1 = Y - 5,
+                    X2 = i,
+                    Y2 = Y + 5,
+                    Stroke = Brushes.Gray,
+                    StrokeThickness = 1
+                };
+                MyCanvas.Children.Add(tick);
+            }
+        }
+
+        //####
+
+        Line mainLine2 = new Line
+        {
+            X1 = X,
+            Y1 = 0,
+            X2 = X,
+            Y2 = scaleHeight,
+            Stroke = Brushes.Gray,
+            StrokeThickness = 2
+        };
+        MyCanvas.Children.Add(mainLine2);
+
+        for (double i = 0; i <= scaleHeight; i += majorTickInterval)
+        {
+            Line tick = new Line
+            {
+                X1 = X - 8,
+                Y1 = i,
+                X2 = X + 8,
+                Y2 = i,
+                Stroke = Brushes.Gray,
+                StrokeThickness = 2
+            };
+            MyCanvas.Children.Add(tick);
+
+            TextBlock label = new TextBlock
+            {
+                Text = i == 0 ? "" : i.ToString(),
+                FontSize = 12,
+                RenderTransform = new ScaleTransform(1, -1)
+            };
+
+            Canvas.SetLeft(label, X + 15);
+            Canvas.SetTop(label, i + 8);
+
+            MyCanvas.Children.Add(label);
+        }
+
+        for (double i = 0; i <= scaleHeight; i += minorTickInterval)
+        {
+            if (Math.Abs(i % majorTickInterval) > 0.001)
+            {
+                Line tick = new Line
+                {
+                    X1 = X - 5,
+                    Y1 = i,
+                    X2 = X + 5,
+                    Y2 = i,
+                    Stroke = Brushes.Gray,
+                    StrokeThickness = 1
+                };
+                MyCanvas.Children.Add(tick);
+            }
+        }
+    }
+
+    private void Resized(object sender, SizeChangedEventArgs e)
+    {
+        DrawPoints();
+
+        if (hullPoints.Count > 0)
+        {
+            DrawLines();
         }
     }
 
@@ -109,7 +249,7 @@ public partial class MainWindow : Window
                 X2 = hullArray[i].X,
                 Y2 = hullArray[i].Y,
                 Stroke = Brushes.Black,
-                StrokeThickness = 2
+                StrokeThickness = 1
             };
 
             MyCanvas.Children.Add(line);
@@ -125,6 +265,8 @@ public partial class MainWindow : Window
         NumberTextBox.Text = "";
         GenerateButton.IsEnabled = false;
         RunButton.IsEnabled = false;
+
+        Resized(null, null);
 
         OutputText.Text = "Cleared";
     }
