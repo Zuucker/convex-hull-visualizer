@@ -27,6 +27,7 @@ public partial class MainWindow : Window
         ExportButton.IsEnabled = false;
         GenerateButton.IsEnabled = false;
         RunButton.IsEnabled = false;
+        AddPointButton.IsEnabled = false;
     }
 
     ///<summary>
@@ -315,6 +316,7 @@ public partial class MainWindow : Window
         ExportButton.IsEnabled = false;
         NumberTextBox.Text = "";
         GenerateButton.IsEnabled = false;
+        AddPointButton.IsEnabled = false;
         RunButton.IsEnabled = false;
 
         Resized(null, null);
@@ -344,11 +346,28 @@ public partial class MainWindow : Window
     /// <param name="sender">Object representing the sender of the event.</param>
     /// <param name="e"> Arguments passed from that event.</param>
     ///</summary>
-    private void CheckIfEmpty(object sender, KeyEventArgs e)
+    private void CheckIfEmptyGenerateBox(object sender, KeyEventArgs e)
     {
         if (e.Key == Key.Back && NumberTextBox.Text.Length == 0)
         {
             GenerateButton.IsEnabled = false;
+        }
+    }
+
+    ///<summary>
+    /// Checks if string in the PointTextBox is empty and enables AddPointButton accordingly.
+    /// <param name="sender">Object representing the sender of the event.</param>
+    /// <param name="e"> Arguments passed from that event.</param>
+    ///</summary>
+    private void CheckIfEmptyPointBox(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Back && PointTextBox.Text.Length == 0)
+        {
+            AddPointButton.IsEnabled = false;
+        }
+        else
+        {
+            AddPointButton.IsEnabled = true;
         }
     }
 
@@ -389,6 +408,62 @@ public partial class MainWindow : Window
 
         DrawPoints();
         RunButton.IsEnabled = true;
+        GenerateButton.IsEnabled = false;
+        NumberTextBox.Text = "";
+    }
+
+    ///<summary>
+    /// Adds a point specified in the PointTextBox.
+    /// <param name="sender">Object representing the sender of the event.</param>
+    /// <param name="e"> Arguments passed from that event.</param>
+    ///</summary>
+    private void AddPoint(object sender, RoutedEventArgs e)
+    {
+        OutputText.Text = "Adding point";
+
+        //check if the format of the text is proper
+        if (!PointTextBox.Text.Contains(",") || PointTextBox.Text.Length < 3)
+        {
+            OutputText.Text = "Wrong point! \n";
+            return;
+        }
+
+        double x = 0,
+            y = 0;
+
+        //try to parse
+        try
+        {
+            x = Double.Parse(PointTextBox.Text.Split(',')[0]);
+            y = Double.Parse(PointTextBox.Text.Split(',')[1]);
+        }
+        catch (Exception Error)
+        {
+            OutputText.Text = "Wrong point! \n";
+        }
+
+        //Create new point
+        Point newPoint = new Point(x, y);
+
+        //Create a new array with space for one more point
+        Point[] newPoints = new Point[points.Length + 1];
+
+        //Copy the old points into a new array
+        for (int j = 0; j < points.Length; j++)
+        {
+            newPoints[j] = points[j];
+        }
+
+        //Add the new point
+        newPoints[points.Length] = newPoint;
+
+        //Switch the arrays
+        points = newPoints;
+
+        DrawPoints();
+        RunButton.IsEnabled = true;
+        AddPointButton.IsEnabled = false;
+        PointTextBox.Text = "";
     }
 
     ///<summary>

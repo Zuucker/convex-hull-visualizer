@@ -20,7 +20,9 @@
         </Border>
 
          <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10">
-            <TextBox Name="NumberTextBox" Margin="5" PreviewTextInput="NumberValidationTextBox" KeyUp="CheckIfEmpty"/>
+            <TextBox Name="PointTextBox" Margin="5" KeyUp="CheckIfEmptyPointBox"/>
+            <Button Content="Add Point" Margin="5" Click="AddPoint" Name="AddPointButton"/>
+            <TextBox Name="NumberTextBox" Margin="5" PreviewTextInput="NumberValidationTextBox" KeyUp="CheckIfEmptyGenerateBox"/>
             <Button Content="Generate Points" Margin="5" Click="GeneratePoints" Name="GenerateButton"/>
             <Button Content="Import CSV" Margin="5" Click="ImportCSV"/>
             <Button Content="Clear Points" Margin="5" Click="Clear"/>
