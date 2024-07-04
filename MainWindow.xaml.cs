@@ -653,6 +653,8 @@ public partial class MainWindow : Window
                 }
                 else
                 { //The previous point is on the line -> ignore
+                    hullPoints.RemoveAt(hullPoints.Count - 1);
+                    hullPoints.Add(angleSortedPoints[i]);
                 }
             }
         }
@@ -726,11 +728,11 @@ public partial class MainWindow : Window
         //Signed area of a parrallelogram spaning on the points a,b,c
         double result = (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
 
-        if (result > 0) //result is positive -> is counterclockwise
+        if (result > 0.1) //result is positive -> is counterclockwise
         {
             return 1;
         }
-        else if (result < 0) // result is negatieve -> clockwise
+        else if (result < -0.1) // result is negatieve -> clockwise
         {
             return -1;
         }

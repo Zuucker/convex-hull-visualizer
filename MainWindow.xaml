@@ -19,7 +19,7 @@
              </Canvas>
         </Border>
 
-         <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10">
+         <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10" Background="White" HorizontalAlignment="Stretch">
             <TextBox Name="PointTextBox" Margin="5" KeyUp="CheckIfEmptyPointBox"/>
             <Button Content="Add Point" Margin="5" Click="AddPoint" Name="AddPointButton"/>
             <TextBox Name="NumberTextBox" Margin="5" PreviewTextInput="NumberValidationTextBox" KeyUp="CheckIfEmptyGenerateBox"/>
@@ -28,7 +28,7 @@
             <Button Content="Clear Points" Margin="5" Click="Clear"/>
             <Button Content="Export to CSV" Margin="5" Click="ExportCSV" Name="ExportButton"/>
             <Button Content="Run" Margin="5" Click="CalculateConvexHull" Name="RunButton"/>
-            <TextBlock Name="OutputText" Text="Output Text" Margin="5" TextWrapping="Wrap"/>
+            <TextBlock Name="OutputText" Text="Output Text" Margin="5" TextWrapping="Wrap" HorizontalAlignment="Stretch"/>
         </StackPanel>
     </Grid>
 </Window>
